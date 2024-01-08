@@ -330,8 +330,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2439d056322c3b4fbdb901cb7e4aa68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 0}
+  sensitivity: 2
   m_spherePrefab: {fileID: 3481545080834779238, guid: 2d4884d1a99ec2a428f55cc2ace310d0, type: 3}
-  m_cubePrefab: {fileID: 0}
+  m_cubePrefab: {fileID: 8747670110989248204, guid: d23f8e5c85ac82d42aba9ab902c3d0f3, type: 3}
   m_planePrefab: {fileID: 0}
 --- !u!4 &1810146548
 Transform:

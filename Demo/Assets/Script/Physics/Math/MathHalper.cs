@@ -36,7 +36,7 @@ namespace PhysicsDemo
 
         #endregion
 
-        #region MyRegion
+        #region Matrix4x4
 
         /// <summary>
         /// 矩阵加法
@@ -116,7 +116,49 @@ namespace PhysicsDemo
             };
         }
 
+        /// <summary>
+        /// Abs
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public static Matrix4x4 Absolute(this Matrix4x4 matrix)
+        {
+            Matrix4x4 result = new Matrix4x4();
+
+            result.m00 = Mathf.Abs(matrix.m00);
+            result.m01 = Mathf.Abs(matrix.m01);
+            result.m02 = Mathf.Abs(matrix.m02);
+            result.m03 = Mathf.Abs(matrix.m03);
+
+            result.m10 = Mathf.Abs(matrix.m10);
+            result.m11 = Mathf.Abs(matrix.m11);
+            result.m12 = Mathf.Abs(matrix.m12);
+            result.m13 = Mathf.Abs(matrix.m13);
+
+            result.m20 = Mathf.Abs(matrix.m20);
+            result.m21 = Mathf.Abs(matrix.m21);
+            result.m22 = Mathf.Abs(matrix.m22);
+            result.m23 = Mathf.Abs(matrix.m23);
+
+            result.m30 = Mathf.Abs(matrix.m30);
+            result.m31 = Mathf.Abs(matrix.m31);
+            result.m32 = Mathf.Abs(matrix.m32);
+            result.m33 = Mathf.Abs(matrix.m33);
+
+            return result;
+        }
+
         #endregion
+
+        /// <summary>
+        /// 取反
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Vector3 Negate(this Vector3 value)
+        {
+            return new Vector3(-value.x, -value.y, -value.z);
+        }
 
         /// <summary>
         /// 转置变换
@@ -180,6 +222,7 @@ namespace PhysicsDemo
 
             return result;
         }
+
 
     }
 

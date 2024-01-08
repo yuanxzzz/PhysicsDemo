@@ -6,9 +6,7 @@ namespace PhysicsDemo
 {
     public class Test : MonoBehaviour
     {
-        RigidBody body;
-        [SerializeField]
-        Camera cam;
+
 
         private void Start()
         {
@@ -41,20 +39,28 @@ namespace PhysicsDemo
                 }
             };
 
-            body = m_world.RigidBodyCreate(new RigidBodyCreateData());
-            body.TransformUpdate(Vector3.zero, Matrix4x4.identity);
-            body.ShapeAdd(new SphereShape(0.5f));
-            body.AffectedByGravity = false;
+            m_body = m_world.RigidBodyCreate(new RigidBodyCreateData());
+            m_body.TransformUpdate(Vector3.zero, Matrix4x4.identity);
+            m_body.ShapeAdd(new SphereShape(0.5f));
+            m_body.AffectedByGravity = false;
 
-            // 随机300个物体
-            for (int i = 0; i < 300; i++)
+            // 随机200个物体
+            for (int i = 0; i < 100; i++)
             {
                 var position = new Vector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f),
                     Random.Range(-10f, 10f));
 
                 RigidBody rig = m_world.RigidBodyCreate(new RigidBodyCreateData());
                 rig.TransformUpdate(position, Matrix4x4.identity);
-                rig.ShapeAdd(new SphereShape(0.5f));
+
+                if (i % 2 == 0)
+                {
+                    rig.ShapeAdd(new SphereShape(0.5f));
+                }
+                else
+                {
+                    rig.ShapeAdd(new CubeShape(Vector3.one));
+                }
                 rig.AffectedByGravity = false;
             }
 
@@ -79,7 +85,6 @@ namespace PhysicsDemo
                 m_elapsedTime -= World.StepDeltaTime;
             }
         }
-        public float sensitivity = 2f; // 鼠标灵敏度
         private void Update4Input()
         {
             // 获取鼠标移动输入
@@ -87,22 +92,22 @@ namespace PhysicsDemo
             float mouseY = Input.GetAxis("Mouse Y");
 
             // 旋转相机
-            cam.transform.Rotate(Vector3.up * mouseX * sensitivity);
+            m_cam.transform.Rotate(Vector3.up * mouseX * m_sensitivity);
 
-            float rotationX = cam.transform.rotation.eulerAngles.x - mouseY * sensitivity;
+            float rotationX = m_cam.transform.rotation.eulerAngles.x - mouseY * m_sensitivity;
 
             // 应用垂直旋转
-            cam.transform.rotation = Quaternion.Euler(rotationX, cam.transform.rotation.eulerAngles.y, 0f);
+            m_cam.transform.rotation = Quaternion.Euler(rotationX, m_cam.transform.rotation.eulerAngles.y, 0f);
 
             // 获取相机前方向
-            Vector3 forward = cam.transform.forward;
+            Vector3 forward = m_cam.transform.forward;
 
             if (Input.GetKey(KeyCode.W))
             {
-                body.ForceAdd(forward * World.StepDeltaTime * 10);
+                m_body.ForceAdd(forward * World.StepDeltaTime * 10);
             }
 
-            cam.transform.position = body.Position - forward * 5f; // 调整 5f 为适当的距离
+            m_cam.transform.position = m_body.Position - forward * 5f; // 调整 5f 为适当的距离
         }
 
         /// <summary>
@@ -135,11 +140,14 @@ namespace PhysicsDemo
             {
                 case SphereShape:
                     go = Instantiate(m_spherePrefab);
-                    go.name = shape.m_shapeId.ToString();
+                    break;
+                case CubeShape:
+                    go = Instantiate(m_cubePrefab);
                     break;
                 default:
                     return;
             }
+            go.name += shape.m_shapeId.ToString();
             var ctor = go.AddComponent<GameObjectController>();
             if (m_gameObjectControllerDict.TryAdd(shape.m_shapeId, ctor))
             {
@@ -176,16 +184,21 @@ namespace PhysicsDemo
         /// </summary>
         private float m_elapsedTime = 0f;
 
-        World m_world;
+        private World m_world;
 
+        private RigidBody m_body;
+
+        [SerializeField]
+        private Camera m_cam;
+        /// <summary>
+        /// 鼠标灵敏度
+        /// </summary>
+        private float m_sensitivity = 2f;
 
         [SerializeField]
         private GameObject m_spherePrefab;
         [SerializeField]
         private GameObject m_cubePrefab;
-        [SerializeField]
-        private GameObject m_planePrefab;
 
-        private float fixedTimeStep;
     }
 }

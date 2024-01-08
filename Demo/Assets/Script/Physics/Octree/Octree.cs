@@ -22,6 +22,7 @@ namespace PhysicsDemo
         /// <param name="shape"></param>
         public void ShapeAdd(Shape shape)
         {
+
             m_rootNode.ShapeAdd(shape);
         }
 
@@ -160,6 +161,7 @@ namespace PhysicsDemo
         /// <param name="shape"></param>
         public void ShapeAdd(Shape shape)
         {
+
             DivideAndAdd(shape);
         }
 
@@ -173,7 +175,7 @@ namespace PhysicsDemo
             bool shouldDivide = m_shapes.Count >= m_maxShapeCount && m_nodeBounds.size.y > m_minBoundSize;
 
             // 细分当前节点
-            if (shouldDivide)
+            if (shouldDivide || m_childrenNode != null)
             {
                 // 构建子节点
                 if (m_childrenNode == null)

@@ -37,12 +37,17 @@ namespace PhysicsDemo
             //}
 
             // 只用检测叶子节点
-            if (node.m_childrenNode == null && node.m_shapes.Count > 1)
+            if (node.m_childrenNode == null /*&& node.m_shapes.Count > 1*/)
             {
                 foreach (var shapeA in node.m_shapes)
                 {
                     foreach (var shapeB in node.m_shapes)
                     {
+                        if (shapeA.m_shapeId == 305 || shapeA.m_shapeId == 383)
+                        {
+                            int a = 0;
+                        }
+
                         // 若是自己则直接跳过
                         if (shapeA.m_shapeId == shapeB.m_shapeId)
                         {
