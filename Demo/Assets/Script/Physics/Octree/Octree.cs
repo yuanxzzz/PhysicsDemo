@@ -41,7 +41,7 @@ namespace PhysicsDemo
         public void ShapeUpdate(Shape shape)
         {
             // 去除所有子节点中的对应body
-            ShapeRemove(shape);
+            //ShapeRemove(shape);
             // 重新插入body
             ShapeAdd(shape);
         }

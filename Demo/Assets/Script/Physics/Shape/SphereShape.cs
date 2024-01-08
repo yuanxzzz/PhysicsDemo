@@ -9,7 +9,8 @@ namespace PhysicsDemo
     {
         public SphereShape(float radius = 1.0f)
         {
-            this.radius = radius;
+            m_radius = radius;
+            Mass = 1.0f;
             ShapeUpdate();
         }
 
@@ -34,7 +35,7 @@ namespace PhysicsDemo
         public override void SupportMapping(in JVector direction, out JVector result)
         {
             ShapeHelper.SupportSphere(direction, out result);
-            result *= radius;
+            result *= m_radius;
         }
 
         /// <summary>
@@ -42,7 +43,15 @@ namespace PhysicsDemo
         /// </summary>
         protected override void InertiaUpdate()
         {
+            float inertia = (2f / 5f) * Mass * m_radius * m_radius;
 
+            Matrix4x4 inertiaMatrix = new Matrix4x4();
+            inertiaMatrix[0, 0] = inertia;
+            inertiaMatrix[1, 1] = inertia;
+            inertiaMatrix[2, 2] = inertia;
+            inertiaMatrix[3, 3] = 1.0f;
+
+            Inertia = inertiaMatrix;
         }
 
         #endregion
@@ -50,13 +59,13 @@ namespace PhysicsDemo
         /// <summary>
         /// 半径
         /// </summary>
-        private float radius;
+        private float m_radius;
         public float Radius
         {
-            get => radius;
+            get => m_radius;
             set
             {
-                radius = value;
+                m_radius = value;
                 ShapeUpdate();
             }
         }

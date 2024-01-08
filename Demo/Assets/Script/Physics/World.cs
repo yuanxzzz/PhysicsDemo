@@ -17,8 +17,12 @@ namespace PhysicsDemo
         /// </summary>
         public void Initialize()
         {
-            octree = new Octree(new Vector3(1000, 1000, 1000), 3, 2);
+            octree = new Octree(new Vector3(1000, 1000, 1000), 20, 20);
+
+            //boundsTree = new BoundsOctree<Shape>(15, Vector3.zero, 1, 1.25f);
         }
+
+        //public BoundsOctree<Shape> boundsTree;
 
         /// <summary>
         /// id索引
@@ -48,10 +52,10 @@ namespace PhysicsDemo
         /// 创建body
         /// </summary>
         /// <returns></returns>
-        public RigidBody RigidBodyCreate()
+        public RigidBody RigidBodyCreate(RigidBodyCreateData data)
         {
             // 创建刚体
-            RigidBody body = new RigidBody(this);
+            RigidBody body = new RigidBody(this, data);
             body.IsActive = true;
 
             m_bodiesDict.Add(body.RigidBodyId, body);
@@ -69,6 +73,7 @@ namespace PhysicsDemo
                 ShapeDetach(shape);
                 shape.RigidBodyDetach();
                 octree.ShapeRemove(shape);
+                //boundsTree.Remove(shape);
             }
 
             // 清理连接
@@ -99,6 +104,7 @@ namespace PhysicsDemo
                 shape.BBoxUpdate();
                 m_shapesDict.Add(shape.m_shapeId, shape);
                 octree.ShapeAdd(shape);
+                //boundsTree.Add(shape, shape.WorldBoundingBox);
                 EventOnShapeAttach?.Invoke(shape);
             }
         }
@@ -107,8 +113,16 @@ namespace PhysicsDemo
             if (m_shapesDict.Remove(shape.m_shapeId))
             {
                 octree.ShapeRemove(shape);
+                //boundsTree.Remove(shape);
                 EventOnShapeDetach.Invoke(shape);
             }
+        }
+
+        public void ShapeUpdate(Shape shape)
+        {
+            octree.ShapeUpdate(shape);
+            //boundsTree.Remove(shape);
+            //boundsTree.Add(shape, shape.WorldBoundingBox);
         }
 
         /// <summary>
@@ -143,7 +157,7 @@ namespace PhysicsDemo
             //1.整合受力
             IntegrateForces();
             //2.解决碰撞和约束
-            // TODO
+            Resolve();
             //3.积分求解，更新状态
             RigidBodyTransformUpdate();
         }
@@ -158,6 +172,7 @@ namespace PhysicsDemo
             // 3.Shape对检测
             // 4.记录碰撞对并触发碰撞事件
             OctreeNodeCheck(octree.m_rootNode);
+            //OctreeNodeCheck();
         }
 
         /// <summary>
@@ -166,6 +181,10 @@ namespace PhysicsDemo
         private void ContactsClear()
         {
             m_collisionDataDict.Clear();
+            foreach (var body in m_bodiesDict.Values)
+            {
+                body.Force = Vector3.zero;
+            }
         }
 
         #endregion
@@ -196,7 +215,7 @@ namespace PhysicsDemo
         /// <summary>
         /// 重力
         /// </summary>
-        private Vector3 m_gravity = new(0, -9.81f, 0);
+        private Vector3 m_gravity = new(0, -9.81f * 0.1f, 0);
         public Vector3 Gravity
         {
             get => m_gravity;

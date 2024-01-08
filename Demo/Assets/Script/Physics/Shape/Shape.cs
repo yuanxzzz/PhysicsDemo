@@ -56,10 +56,7 @@ namespace PhysicsDemo
         /// <summary>
         /// 更新惯性张量
         /// </summary>
-        protected virtual void InertiaUpdate()
-        {
-
-        }
+        protected abstract void InertiaUpdate();
 
         /// <summary>
         /// 更新包围盒

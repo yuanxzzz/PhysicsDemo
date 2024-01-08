@@ -148,6 +148,38 @@ namespace PhysicsDemo
             result = new Vector3(x, y, z);
         }
 
+        /// <summary>
+        /// 创建标准正交
+        /// </summary>
+        /// <param name="vec"></param>
+        /// <returns></returns>
+        public static Vector3 CreateOrthonormal(Vector3 vec)
+        {
+            Vector3 result = vec;
+
+            Debug.Assert(!Mathf.Approximately(0, vec.magnitude));
+
+            float xa = Mathf.Abs(vec.x);
+            float ya = Mathf.Abs(vec.y);
+            float za = Mathf.Abs(vec.z);
+
+            if ((xa > ya && xa > za) || (ya > xa && ya > za))
+            {
+                result.x = vec.y;
+                result.y = -vec.x;
+                result.z = 0;
+            }
+            else
+            {
+                result.y = vec.z;
+                result.z = -vec.y;
+                result.x = 0;
+            }
+
+            result.Normalize();
+
+            return result;
+        }
 
     }
 

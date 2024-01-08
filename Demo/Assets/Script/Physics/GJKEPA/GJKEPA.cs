@@ -398,7 +398,7 @@ namespace PhysicsDemo
         public static bool Detect(ISupportMappable supportA, ISupportMappable supportB,
          in JMatrix orientationA, in JMatrix orientationB,
          in JVector positionA, in JVector positionB,
-         out JVector pointA, out JVector pointB, out double separation)
+         out JVector pointA, out JVector pointB, out JVector normal, out double separation)
         {
             epaSolver ??= new GJKEPASolver();
 
@@ -409,7 +409,7 @@ namespace PhysicsDemo
             epaSolver.MKD.PositionA = positionA;
             epaSolver.MKD.PositionB = positionB;
 
-            bool success = epaSolver.Solve(out pointA, out pointB, out _, out separation);
+            bool success = epaSolver.Solve(out pointA, out pointB, out normal, out separation);
 
             return success;
         }

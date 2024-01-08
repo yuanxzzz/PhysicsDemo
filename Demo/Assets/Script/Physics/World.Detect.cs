@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Assets.Script.Physics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace PhysicsDemo
@@ -12,7 +13,29 @@ namespace PhysicsDemo
         /// </summary>
         /// <param name="node"></param>
         private void OctreeNodeCheck(OctreeNode node)
+        //private void OctreeNodeCheck()
         {
+            //foreach (var shapeA in m_shapesDict.Values)
+            //{
+            //    List<Shape> collidingWith = new List<Shape>();
+            //    boundsTree.GetColliding(collidingWith, shapeA.WorldBoundingBox);
+            //    foreach (var shapeB in collidingWith)
+            //    {
+            //        //若是自己则直接跳过
+            //        if (shapeA.m_shapeId == shapeB.m_shapeId)
+            //        {
+            //            continue;
+            //        }
+
+            //        // 检测包围盒
+            //        if (shapeA.WorldBoundingBox.Intersects(shapeB.WorldBoundingBox))
+            //        {
+            //            // 细检测
+            //            Detect(shapeA, shapeB);
+            //        }
+            //    }
+            //}
+
             // 只用检测叶子节点
             if (node.m_childrenNode == null && node.m_shapes.Count > 1)
             {
@@ -63,6 +86,11 @@ namespace PhysicsDemo
             {
                 return;
             }
+
+            // 非活跃物体不用检测
+            if (!sA.RigidBody.IsActive && !sB.RigidBody.IsActive) return;
+            // 静态物体间没碰撞
+            if (sA.RigidBody.IsStatic && sB.RigidBody.IsStatic) return;
 
             bool colliding = CollisionHelper.Detect(sA, sB, out var result);
             if (colliding)

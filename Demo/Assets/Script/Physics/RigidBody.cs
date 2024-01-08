@@ -1,22 +1,48 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.VersionControl.Asset;
 
 namespace PhysicsDemo
 {
+    public struct RigidBodyCreateData
+    {
+        public bool IsStatic;
+    }
+
     /// <summary>
     /// RigidBody
     /// </summary>
     public class RigidBody
     {
-        public RigidBody(World world)
+        public RigidBody(World world, RigidBodyCreateData data)
         {
             World = world;
             RigidBodyId = World.RequestId();
+
+            IsStatic = data.IsStatic;
+
             DefaultMassInertiaSet();
         }
 
         #region 公共方法
+
+        public void TransformUpdate(Vector3 pos, Matrix4x4 ori)
+        {
+            Position = pos;
+            Orientation = ori;
+
+            // 更新惯性矩阵
+            InertiaUpdate();
+
+            // 设为Active
+            IsActive = true;
+
+            // 更新对应Shape
+            foreach (var shape in Shapes)
+            {
+                shape.ShapeUpdate();
+                World.ShapeUpdate(shape);
+            }
+        }
 
         /// <summary>
         /// 施加力
@@ -43,9 +69,8 @@ namespace PhysicsDemo
         {
             shape.RigidBodyAttach(this);
             Shapes.Add(shape);
-
-
             World.ShapeAttach(shape);
+            MassInertiaUpdate();
         }
 
         /// <summary>
@@ -57,6 +82,7 @@ namespace PhysicsDemo
             shape.RigidBodyDetach();
             Shapes.Remove(shape);
             World.ShapeDetach(shape);
+            MassInertiaUpdate();
         }
 
         #endregion
@@ -81,9 +107,9 @@ namespace PhysicsDemo
         }
 
         /// <summary>
-        /// 设置质量和惯性
+        /// 更新质量和惯性
         /// </summary>
-        public void MassInertiaSet()
+        public void MassInertiaUpdate()
         {
             if (Shapes.Count == 0)
             {
@@ -172,8 +198,8 @@ namespace PhysicsDemo
         /// <summary>
         /// 速度
         /// </summary>
-        public Vector3 Velocity { get; set; }
-        public Vector3 AngularVelocity { get; set; }
+        public Vector3 Velocity { get; set; } = Vector3.zero;
+        public Vector3 AngularVelocity { get; set; } = Vector3.zero;
 
         /// <summary>
         /// 加速度
@@ -205,7 +231,7 @@ namespace PhysicsDemo
         /// <summary>
         /// 质量
         /// </summary>
-        public float Mass => 1.0f / Mass;
+        public float Mass => 1.0f / InverseMass;
         public float InverseMass { get; set; } = 1;
 
         #endregion

@@ -6,6 +6,10 @@ namespace PhysicsDemo
 {
     public class Test : MonoBehaviour
     {
+        RigidBody body;
+        [SerializeField]
+        Camera cam;
+
         private void Start()
         {
             Random.InitState(123);
@@ -37,16 +41,23 @@ namespace PhysicsDemo
                 }
             };
 
+            body = m_world.RigidBodyCreate(new RigidBodyCreateData());
+            body.TransformUpdate(Vector3.zero, Matrix4x4.identity);
+            body.ShapeAdd(new SphereShape(0.5f));
+            body.AffectedByGravity = false;
+
             // 随机300个物体
             for (int i = 0; i < 300; i++)
             {
                 var position = new Vector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f),
                     Random.Range(-10f, 10f));
-                RigidBody rig = m_world.RigidBodyCreate();
-                rig.Position = position;
+
+                RigidBody rig = m_world.RigidBodyCreate(new RigidBodyCreateData());
+                rig.TransformUpdate(position, Matrix4x4.identity);
                 rig.ShapeAdd(new SphereShape(0.5f));
                 rig.AffectedByGravity = false;
             }
+
         }
 
         private void Update()
@@ -57,7 +68,7 @@ namespace PhysicsDemo
             // 判断是否需要进行固定帧率的物理更新
             while (m_elapsedTime >= World.StepDeltaTime)
             {
-                //Update4Input();
+                Update4Input();
 
                 // 进行物理更新
                 m_world.Update();
@@ -67,6 +78,31 @@ namespace PhysicsDemo
                 // 减去已经模拟的时间
                 m_elapsedTime -= World.StepDeltaTime;
             }
+        }
+        public float sensitivity = 2f; // 鼠标灵敏度
+        private void Update4Input()
+        {
+            // 获取鼠标移动输入
+            float mouseX = Input.GetAxis("Mouse X");
+            float mouseY = Input.GetAxis("Mouse Y");
+
+            // 旋转相机
+            cam.transform.Rotate(Vector3.up * mouseX * sensitivity);
+
+            float rotationX = cam.transform.rotation.eulerAngles.x - mouseY * sensitivity;
+
+            // 应用垂直旋转
+            cam.transform.rotation = Quaternion.Euler(rotationX, cam.transform.rotation.eulerAngles.y, 0f);
+
+            // 获取相机前方向
+            Vector3 forward = cam.transform.forward;
+
+            if (Input.GetKey(KeyCode.W))
+            {
+                body.ForceAdd(forward * World.StepDeltaTime * 10);
+            }
+
+            cam.transform.position = body.Position - forward * 5f; // 调整 5f 为适当的距离
         }
 
         /// <summary>
@@ -119,16 +155,16 @@ namespace PhysicsDemo
             }
         }
 
-        /// <summary>
-        /// 画出八叉树边界
-        /// </summary>
-        private void OnDrawGizmos()
-        {
-            if (Application.isPlaying)
-            {
-                m_world.octree.m_rootNode.Draw();
-            }
-        }
+        ///// <summary>
+        ///// 画出八叉树边界
+        ///// </summary>
+        //private void OnDrawGizmos()
+        //{
+        //    if (Application.isPlaying)
+        //    {
+        //        m_world.octree.m_rootNode.Draw();
+        //    }
+        //}
 
         /// <summary>
         /// controller字典
