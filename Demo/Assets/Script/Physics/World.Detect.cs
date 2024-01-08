@@ -67,14 +67,12 @@ namespace PhysicsDemo
             bool colliding = CollisionHelper.Detect(sA, sB, out var result);
             if (colliding)
             {
-                // 记录碰撞结果
-                m_collisionDataDict.Add((sA.m_shapeId, sB.m_shapeId), result);
                 // 触发事件
                 EventOnCollisionEnter?.Invoke(result);
             }
+            // 记录碰撞检测结果
+            m_collisionDataDict.Add((sA.m_shapeId, sB.m_shapeId), result);
         }
-
-
     }
 }
 

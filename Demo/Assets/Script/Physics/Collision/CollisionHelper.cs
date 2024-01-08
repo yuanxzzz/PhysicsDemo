@@ -14,7 +14,20 @@ namespace Assets.Script.Physics
         /// <returns></returns>
         public static bool Detect(Shape sA, Shape sB, out CollisionResult result)
         {
-            return DetectSphere2Sphere((SphereShape)sA, (SphereShape)sB, out result);
+            // todo：使用GJKEPA
+            GJKEPA.Detect((ISupportMappable)sA, (ISupportMappable)sB, (JMatrix)sA.RigidBody.Orientation,
+                (JMatrix)sB.RigidBody.Orientation, sA.Position, sB.Position, out var pointA, out var pointB, out var separation);
+            result = new CollisionResult();
+            bool colliding = separation < 0;
+            if (separation < 0)
+            {
+                result.m_body1 = sA.RigidBody;
+                result.m_body2 = sB.RigidBody;
+                // todo:构建collisionResult
+                //result.init();
+            }
+            return colliding;
+            //return DetectSphere2Sphere((SphereShape)sA, (SphereShape)sB, out result);
         }
 
         /// <summary>

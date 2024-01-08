@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace PhysicsDemo
 {
@@ -11,6 +12,48 @@ namespace PhysicsDemo
     /// </summary>
     public struct JMatrix
     {
+        // JMatrix 到 Matrix4x4 的转换
+        public static implicit operator Matrix4x4(JMatrix jMatrix)
+        {
+            return new Matrix4x4
+            {
+                m00 = (float)jMatrix.M11,
+                m01 = (float)jMatrix.M12,
+                m02 = (float)jMatrix.M13,
+                m03 = 0f,
+                m10 = (float)jMatrix.M21,
+                m11 = (float)jMatrix.M22,
+                m12 = (float)jMatrix.M23,
+                m13 = 0f,
+                m20 = (float)jMatrix.M31,
+                m21 = (float)jMatrix.M32,
+                m22 = (float)jMatrix.M33,
+                m23 = 0f,
+                m30 = 0f,
+                m31 = 0f,
+                m32 = 0f,
+                m33 = 1f
+            };
+        }
+
+        // Matrix4x4 到 JMatrix 的转换
+        public static implicit operator JMatrix(Matrix4x4 matrix4x4)
+        {
+            return new JMatrix
+            {
+                M11 = matrix4x4.m00,
+                M12 = matrix4x4.m01,
+                M13 = matrix4x4.m02,
+                M21 = matrix4x4.m10,
+                M22 = matrix4x4.m11,
+                M23 = matrix4x4.m12,
+                M31 = matrix4x4.m20,
+                M32 = matrix4x4.m21,
+                M33 = matrix4x4.m22
+            };
+        }
+
+
         /// <summary>
         /// M11
         /// </summary>

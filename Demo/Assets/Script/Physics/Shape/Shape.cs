@@ -141,8 +141,5 @@ namespace PhysicsDemo
         public virtual Vector3 Velocity => RigidBody != null ? RigidBody.Velocity : Vector3.zero;
 
         #endregion
-
-
-
     }
 }

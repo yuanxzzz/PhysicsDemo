@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace PhysicsDemo
 {
@@ -10,6 +11,18 @@ namespace PhysicsDemo
     /// </summary>
     public struct JVector
     {
+        // JVector 到 Vector3 的转换
+        public static implicit operator Vector3(JVector jVector)
+        {
+            return new Vector3((float)jVector.X, (float)jVector.Y, (float)jVector.Z);
+        }
+
+        // Vector3 到 JVector 的转换
+        public static implicit operator JVector(Vector3 vector3)
+        {
+            return new JVector(vector3.x, vector3.y, vector3.z);
+        }
+
         internal static JVector InternalZero;
         internal static JVector Arbitrary;
 
