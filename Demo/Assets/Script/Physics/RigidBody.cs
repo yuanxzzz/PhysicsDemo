@@ -195,11 +195,35 @@ namespace PhysicsDemo
         /// </summary>
         public Matrix4x4 Orientation { get; set; } = Matrix4x4.identity;
 
+        private Vector3 m_velocity = Vector3.zero;
         /// <summary>
         /// 速度
         /// </summary>
-        public Vector3 Velocity { get; set; } = Vector3.zero;
-        public Vector3 AngularVelocity { get; set; } = Vector3.zero;
+        public Vector3 Velocity
+        {
+            get
+            {
+                return m_velocity;
+            }
+            set
+            {
+                if (IsStatic)
+                    return;
+                m_velocity = value;
+            }
+        }
+        private Vector3 m_angularVelocity = Vector3.zero;
+
+        public Vector3 AngularVelocity
+        {
+            get { return m_angularVelocity; }
+            set
+            {
+                if (IsStatic)
+                    return;
+                m_angularVelocity = value;
+            }
+        }
 
         /// <summary>
         /// 加速度
@@ -216,11 +240,12 @@ namespace PhysicsDemo
         /// <summary>
         /// 摩擦
         /// </summary>
-        public float Friction { get; set; }
+        public float Friction { get; set; } = 0.2f;
+
         /// <summary>
         /// 弹性系数
         /// </summary>
-        public float Restitution { get; set; }
+        public float Restitution { get; set; } = 0.5f;
 
         /// <summary>
         /// 阻尼
