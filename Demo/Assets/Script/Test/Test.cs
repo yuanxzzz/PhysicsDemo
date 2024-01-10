@@ -45,7 +45,7 @@ namespace PhysicsDemo
             m_body.AffectedByGravity = false;
 
             // 随机200个物体
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 200; i++)
             {
                 var position = new Vector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f),
                     Random.Range(-10f, 10f));
@@ -63,7 +63,6 @@ namespace PhysicsDemo
                 }
                 rig.AffectedByGravity = false;
             }
-
         }
 
         private void Update()

@@ -172,10 +172,10 @@ namespace PhysicsDemo
         private void DivideAndAdd(Shape shape)
         {
             // 判断是否需要细分当前节点
-            bool shouldDivide = m_shapes.Count >= m_maxShapeCount && m_nodeBounds.size.y > m_minBoundSize;
+            bool shouldDivide = (m_shapes.Count >= m_maxShapeCount && m_nodeBounds.size.y > m_minBoundSize) || m_childrenNode != null;
 
             // 细分当前节点
-            if (shouldDivide || m_childrenNode != null)
+            if (shouldDivide)
             {
                 // 构建子节点
                 if (m_childrenNode == null)
@@ -223,8 +223,12 @@ namespace PhysicsDemo
                     m_childrenNode = null;
                 }
             }
-            // 添加新形状到当前节点
-            ShapeRecord(shape);
+            else
+            {
+                // 添加新形状到当前节点
+                ShapeRecord(shape);
+
+            }
         }
 
         /// <summary>

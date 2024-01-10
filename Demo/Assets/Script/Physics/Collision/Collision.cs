@@ -70,6 +70,8 @@ namespace PhysicsDemo
         /// <param name="normal"></param>
         /// <param name="pointA"></param>
         /// <param name="pointB"></param>
+        /// <param name="restitution"></param>
+        /// <param name="friction"></param>
         public void Init(RigidBody body1, RigidBody body2, Vector3 normal, Vector3 pointA, Vector3 pointB, float restitution, float friction)
         {
             collising = true;
@@ -97,11 +99,12 @@ namespace PhysicsDemo
                 Bias = Math.Max(-restitution * relNormalVel, Bias);
             }
 
+            // 切线方向
             Tangent1 = dv - Normal * relNormalVel;
             float num = Tangent1.sqrMagnitude;
             if (num > 1e-12f)
             {
-                num = 1.0f / (float)Math.Sqrt(num);
+                num = 1.0f / MathF.Sqrt(num);
                 Tangent1 *= num;
             }
             else
@@ -125,42 +128,36 @@ namespace PhysicsDemo
                 return;
             }
 
-            Vector3 collisionNormal = Normal;
-
-            // 计算冲量大小
-            CalculateImpulseMagnitude(RelativeVelocity, collisionNormal, m_body1, m_body2, Restitution);
+            // 迭代前相关数据计算 
+            IteratePrepare(m_body1, m_body2);
 
             // 迭代
             // 这里只做了一次，因为只记录了最近的一个碰撞点
             Iterate(m_body1, m_body2);
-
         }
 
 
         /// <summary>
         /// 计算冲量大小
         /// </summary>
-        /// <param name="relativeVelocity"></param>
-        /// <param name="collisionNormal"></param>
         /// <param name="b1"></param>
         /// <param name="b2"></param>
-        /// <param name="restitution"></param>
         /// <returns></returns>
-        private Vector3 CalculateImpulseMagnitude(Vector3 relativeVelocity, Vector3 collisionNormal, RigidBody b1, RigidBody b2, float restitution)
+        private void IteratePrepare(RigidBody b1, RigidBody b2)
         {
             // 接触点速度
             MathHelper.Transform(RelativePos1, b1.Orientation, out RelativePos1);
             var vp1 = b1.Velocity + RelativePos1;
             MathHelper.Transform(RelativePos2, b2.Orientation, out RelativePos2);
             var vp2 = b2.Velocity + RelativePos2;
-            // prepare
+            // 刚体在法线上的转动惯量
             var tt = Vector3.Cross(RelativePos1, Normal);
             MathHelper.Transform(tt, b1.InverseInertiaWorld, out M_n1);
 
             tt = Vector3.Cross(RelativePos2, Normal);
             MathHelper.Transform(tt, b2.InverseInertiaWorld, out M_n2);
 
-            // 计算切线
+            // 计算在切线方向上的转动惯量
             tt = Vector3.Cross(RelativePos1, Tangent1);
             MathHelper.Transform(tt, b1.InverseInertiaWorld, out M_t1);
 
@@ -194,18 +191,6 @@ namespace PhysicsDemo
             MassTangent1 = 1.0f / kTangent1;
             MassTangent2 = 1.0f / kTangent2;
             MassNormal = 1.0f / kNormal;
-
-            Vector3 impulse = Normal * AccumulatedNormalImpulse + Tangent1 * AccumulatedTangentImpulse1 +
-                              Tangent2 * AccumulatedTangentImpulse2;
-
-            b1.Velocity -= impulse * b1.InverseMass;
-            b1.AngularVelocity -= AccumulatedNormalImpulse * M_n1 + AccumulatedTangentImpulse1 * M_t1 +
-                                  AccumulatedTangentImpulse2 * M_tt1;
-
-            b2.Velocity += impulse * b2.InverseMass;
-            b2.AngularVelocity += AccumulatedNormalImpulse * M_n2 + AccumulatedTangentImpulse1 * M_t2 +
-                                  AccumulatedTangentImpulse2 * M_tt2;
-            return impulse;
         }
 
         public void Iterate(RigidBody b1, RigidBody b2)

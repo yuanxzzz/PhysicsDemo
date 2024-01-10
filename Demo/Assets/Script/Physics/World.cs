@@ -22,7 +22,7 @@ namespace PhysicsDemo
             //boundsTree = new BoundsOctree<Shape>(15, Vector3.zero, 1, 1.25f);
         }
 
-        //public BoundsOctree<Shape> boundsTree;
+        public BoundsOctree<Shape> boundsTree;
 
         /// <summary>
         /// id索引
